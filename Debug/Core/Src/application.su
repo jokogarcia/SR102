@@ -1,0 +1,5 @@
+application.c:5:6:application_init	16	static
+application.c:37:6:application_loop	8	static
+application.c:43:6:application_DMA_IRQ_Callback	16	static
+application.c:49:6:ADC_process	16	static
+application.c:68:6:trigger	16	static
