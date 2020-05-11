@@ -1,6 +1,6 @@
 #include "main.h"
 #include "application.h"
-
+#include "usbd_cdc_if.h"
 
 void application_init(){
 	c=0;
@@ -33,6 +33,7 @@ void application_init(){
 	keys[7] = 49; //crash cymb 1
 	keys[8] = 51; //ride cynb 1
 	keys[9] = 57; //crash cymb 2
+	int tmp = DebugWrite("Hello world!");
 }
 void application_loop(){
 	if(status==1){
@@ -73,4 +74,16 @@ void trigger(int cuerpo, int veloc) {
 	fullCommand[2] = veloc 				& 0x7f;
 	HAL_UART_Transmit_DMA(&huart3, fullCommand, sizeof(fullCommand));
 	return;
+}
+int DebugWrite(uint8_t* str){
+	int length = myStrLen(str);
+	CDC_Transmit_FS(str, length);
+
+}
+int myStrLen(uint8_t *p){
+	int c=0;
+	while(*p++ != 0){
+		c++;
+	}
+	return c;
 }

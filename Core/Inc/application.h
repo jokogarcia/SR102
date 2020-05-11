@@ -20,6 +20,7 @@ void trigger(int, int);
 void application_init();
 void application_loop();
 void application_DMA_IRQ_Callback();
+int DebugWrite(uint8_t* str);
 
 extern ADC_HandleTypeDef hadc1;
 extern UART_HandleTypeDef huart3;
