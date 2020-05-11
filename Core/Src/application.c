@@ -43,19 +43,20 @@ void application_loop(){
 }
 void application_DMA_IRQ_Callback(){
 	for(int i=0;i<ARRAYSIZE;i++){
-		ADC_Work_Buffer[i] = ADC_values[i];
+		ADC_Work_Buffer[i] = (uint8_t)(ADC_values[i]>>9);
 	}
 	status=1;
 }
 void ADC_process(void) {
-	static uint16_t c[ARRAYSIZE], ADC_oldvalues[ARRAYSIZE];
-	for (int i = 0; i < ARRAYSIZE; i++) {
+	static uint8_t c[ARRAYSIZE], ADC_oldvalues[ARRAYSIZE];
+
+	for (uint8_t i = 0; i < ARRAYSIZE; i++) {
 		if (c[i] > 0) {
 			c[i]--;
 			continue;
 		}
 		if (ADC_Work_Buffer[i] > TRIG && ADC_Work_Buffer[i] < ADC_oldvalues[i]) {
-			trigger(i, ADC_Work_Buffer[i]);
+			trigger(i, ((uint8_t)ADC_Work_Buffer[i]>>9));
 			c[i] = 10;
 			ADC_oldvalues[i] = 0;
 			continue;
@@ -66,13 +67,16 @@ void ADC_process(void) {
 }
 
 
-void trigger(int cuerpo, int veloc) {
+void trigger(uint8_t cuerpo, uint8_t veloc) {
 
 	static uint8_t fullCommand[3];
 	fullCommand[0] = channels[cuerpo] 	| 0x90;
 	fullCommand[1] = keys[cuerpo] 		& 0x7f;
 	fullCommand[2] = veloc 				& 0x7f;
-	HAL_UART_Transmit_DMA(&huart3, fullCommand, sizeof(fullCommand));
+	HAL_UART_Transmit_DMA(&huart3, fullCommand, 3);
+
+	//DELETE THIS.
+	CDC_Transmit_FS(fullCommand,3);
 	return;
 }
 int DebugWrite(uint8_t* str){
