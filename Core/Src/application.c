@@ -1,6 +1,7 @@
 #include "main.h"
 #include "application.h"
 #include "usbd_cdc_if.h"
+int counter=10000;
 
 void application_init(){
 	c=0;
@@ -33,31 +34,35 @@ void application_init(){
 	keys[7] = 49; //crash cymb 1
 	keys[8] = 51; //ride cynb 1
 	keys[9] = 57; //crash cymb 2
-	int tmp = DebugWrite("Hello world!");
+
 }
 void application_loop(){
 	if(status==1){
 		ADC_process();
 		status=0;
+
 	}
+
 }
 void application_DMA_IRQ_Callback(){
 	for(int i=0;i<ARRAYSIZE;i++){
-		ADC_Work_Buffer[i] = (uint8_t)(ADC_values[i]>>9);
+		ADC_Work_Buffer[i] = (uint8_t)(ADC_values[i]>>1);
 	}
 	status=1;
 }
 void ADC_process(void) {
 	static uint8_t c[ARRAYSIZE], ADC_oldvalues[ARRAYSIZE];
 
+
 	for (uint8_t i = 0; i < ARRAYSIZE; i++) {
+
 		if (c[i] > 0) {
 			c[i]--;
 			continue;
 		}
 		if (ADC_Work_Buffer[i] > TRIG && ADC_Work_Buffer[i] < ADC_oldvalues[i]) {
-			trigger(i, ((uint8_t)ADC_Work_Buffer[i]>>9));
-			c[i] = 10;
+			trigger(i, ((uint8_t)ADC_Work_Buffer[i]));
+			c[i] = STAND_OFF_COUNTER;
 			ADC_oldvalues[i] = 0;
 			continue;
 		}
@@ -79,12 +84,12 @@ void trigger(uint8_t cuerpo, uint8_t veloc) {
 	CDC_Transmit_FS(fullCommand,3);
 	return;
 }
-int DebugWrite(uint8_t* str){
+int DebugWrite(char* str){
 	int length = myStrLen(str);
 	CDC_Transmit_FS(str, length);
 
 }
-int myStrLen(uint8_t *p){
+int myStrLen(char *p){
 	int c=0;
 	while(*p++ != 0){
 		c++;

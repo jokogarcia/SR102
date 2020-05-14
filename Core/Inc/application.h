@@ -9,7 +9,8 @@
 #define SRC_APPLICATION_H_
 
 #define ARRAYSIZE 9
-#define TRIG 200
+#define TRIG 100
+#define STAND_OFF_COUNTER 200
 uint16_t ADC_values[ARRAYSIZE];
 uint8_t ADC_Work_Buffer[ARRAYSIZE];
 uint32_t status;
@@ -21,8 +22,8 @@ void trigger(uint8_t cuerpo, uint8_t veloc);
 void application_init();
 void application_loop();
 void application_DMA_IRQ_Callback();
-int DebugWrite(uint8_t* str);
-int myStrLen(uint8_t *p);
+int DebugWrite(char* str);
+int myStrLen(char *p);
 
 extern ADC_HandleTypeDef hadc1;
 extern UART_HandleTypeDef huart3;
